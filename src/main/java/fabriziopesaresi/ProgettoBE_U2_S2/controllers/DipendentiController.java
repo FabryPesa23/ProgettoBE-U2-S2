@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,5 +46,25 @@ public class DipendentiController {
     @GetMapping("/{id}")
     public Dipendente findById(@PathVariable UUID id) {
         return this.dipendentiService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Dipendente findByIdAndUpdate(@PathVariable UUID id, @RequestBody @Validated DipendenteDTO body, BindingResult validation) {
+        if (validation.hasErrors()) {
+            throw new ValidationException(validation.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage()).collect(Collectors.toList()));
+        }
+        return this.dipendentiService.findByIdAndUpdate(id, body);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void findByIdAndDelete(@PathVariable UUID id) {
+        this.dipendentiService.findByIdAndDelete(id);
+    }
+
+    @PatchMapping("/{id}/avatar")
+    public Dipendente uploadAvatar(@PathVariable UUID id, @RequestParam("avatar") MultipartFile file) throws IOException {
+        return this.dipendentiService.uploadAvatar(id, file);
     }
 }

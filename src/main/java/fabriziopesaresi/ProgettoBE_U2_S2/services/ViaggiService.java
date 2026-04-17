@@ -7,6 +7,7 @@ import fabriziopesaresi.ProgettoBE_U2_S2.repositories.ViaggioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 public class ViaggiService {
@@ -25,13 +26,30 @@ public class ViaggiService {
         return this.viaggioRepository.save(nuovo);
     }
 
+    public List<Viaggio> findAll() {
+        return this.viaggioRepository.findAll();
+    }
+
     public Viaggio findById(UUID id) {
         return this.viaggioRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
-    public Viaggio updateStato(UUID id, String nuovoStato) {
+    public Viaggio findByIdAndUpdate(UUID id, ViaggioDTO body) {
         Viaggio found = this.findById(id);
-        found.setStato(nuovoStato);
+        found.setDestinazione(body.destinazione());
+        found.setData(body.data());
+        found.setStato(body.stato());
         return this.viaggioRepository.save(found);
+    }
+
+    public void findByIdAndDelete(UUID id) {
+        Viaggio found = this.findById(id);
+        this.viaggioRepository.delete(found);
+    }
+
+    public Viaggio updateStato(UUID id, String nuovoStato) {
+        Viaggio trovato = this.findById(id);
+        trovato.setStato(nuovoStato);
+        return viaggioRepository.save(trovato);
     }
 }
